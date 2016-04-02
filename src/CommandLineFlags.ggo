@@ -1,0 +1,7 @@
+version "1.0.0"
+package "hexa"
+purpose "HexArtisan hex editor
+
+By Mustafa Serdar Sanli <mserdarsanli@gmail.com>"
+
+option "column_count" - "Columns to display" int optional default="20"
