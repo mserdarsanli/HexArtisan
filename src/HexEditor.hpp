@@ -157,16 +157,9 @@ private:
 	void RenderValueTable(Painter &p);
 	void RenderInfoBar(Painter &p);
 
-	void MarkSelection(string comment)
-	{
-		MarkData m;
-		m.start_address = min(cursor_pos, selection_start_byte);
-		m.length = 1 + max(cursor_pos, selection_start_byte) -  min(cursor_pos, selection_start_byte);
-		m.user_comment = comment;
-
-		// TODO prevent overlapping comments, as they'd be hard for rendering.
-		marks.insert(m);
-	}
+	// Functions to create marks.
+	void MarkRange(int offset, int length, const string &comment);
+	void MarkSelection(const string &comment);
 
 	const MarkData* GetMarkUnder(int addr)
 	{

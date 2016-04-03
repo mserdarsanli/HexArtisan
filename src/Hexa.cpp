@@ -16,6 +16,7 @@
 // along with HexArtisan.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <algorithm>
+#include <exception>
 #include <fstream>
 #include <iostream>
 #include <string>
@@ -272,10 +273,11 @@ void Hexa::ProcessCommand(const string &cmd)
 		return;
 	}
 
-	// Process :mark "sadasdas"
-	if (cmd.size() > 7
-	    && cmd.substr(0, 6) == "mark \""
-	    && cmd[cmd.size() - 1] == '\"')
+	// Process :mark "sadasdas" // For selection
+	// or :mark 0:4 "Header" // For absolute offset:length
+	regex mark_selection_regex("mark[[:space:]]*\"([^\"]+)\"");
+	regex mark_absolute_range_regex("mark[[:space:]]*(([0-9]+):([0-9]+))[[:space:]]*\"([^\"]+)\"");
+	if (regex_match(cmd, matches, mark_selection_regex))
 	{
 		if (mode != EditorMode::Visual)
 		{
@@ -283,13 +285,39 @@ void Hexa::ProcessCommand(const string &cmd)
 		}
 		else
 		{
-			string comment = cmd.substr(6);
-			comment.pop_back();
+			string comment = matches[1].str();
 			GetCurrentEditor()->MarkSelection(comment);
 
 			SetStatus(StatusType::NORMAL,
 			    "Marked, total marks = " + to_string(GetCurrentEditor()->marks.size()));
 		}
+		return;
+	}
+	if (regex_match(cmd, matches, mark_absolute_range_regex))
+	{
+		string comment = matches[4].str();
+		int offset, length;
+		try
+		{
+			offset = stoi(matches[2].str());
+			length = stoi(matches[3].str());
+
+			if (offset < 0 || length <= 0)
+			{
+				throw invalid_argument("Invalid range");
+			}
+		}
+		catch (std::exception &e)
+		{
+			SetStatus(StatusType::ERROR, e.what());
+			return;
+		}
+
+		GetCurrentEditor()->MarkRange(offset, length, comment);
+
+		SetStatus(StatusType::NORMAL,
+		    "Marked, total marks = " + to_string(GetCurrentEditor()->marks.size()));
+
 		return;
 	}
 
