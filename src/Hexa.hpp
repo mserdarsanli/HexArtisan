@@ -82,7 +82,7 @@ private:
 	void RenderTabsList(Painter &p);
 
 	// Loads file and executes commands from it
-	void LoadScriptFile(std::string &file_name);
+	void LoadScriptFile(const std::string &file_name);
 private:
 	// TODO make FileBuffer class.
 	std::map< std::string, std::vector<uint8_t> > file_contents;
@@ -117,4 +117,6 @@ private:
 
 	// Cached value for column count computation.
 	int last_screen_width = -1;
+
+	const gengetopt_args_info &args;
 };

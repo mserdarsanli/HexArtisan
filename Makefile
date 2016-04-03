@@ -53,3 +53,5 @@ src/CommandLineFlags.hpp src/CommandLineFlags.cpp: src/CommandLineFlags.ggo
 .PHONY: install
 install: hexa
 	cp hexa /usr/local/bin/
+	mkdir --parents /usr/share/hexa/hexa-1.0.0/
+	cp -R -f runtime/* /usr/share/hexa/hexa-1.0.0/

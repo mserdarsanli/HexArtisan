@@ -365,3 +365,21 @@ void HexEditor::ScreenWidthUpdated(int new_screen_width)
 
 	// TODO what happens to first_byte_shown? maybe call FixScroll?
 }
+
+void HexEditor::MarkRange(int offset, int length, const string &comment)
+{
+	MarkData m;
+	m.start_address = offset;
+	m.length = length;
+	m.user_comment = comment;
+
+	// TODO prevent overlapping comments, as they'd be hard for rendering.
+	marks.insert(m);
+}
+
+void HexEditor::MarkSelection(const string &comment)
+{
+	int offset = min(cursor_pos, selection_start_byte);
+	int length = 1 + max(cursor_pos, selection_start_byte) -  min(cursor_pos, selection_start_byte);
+	MarkRange(offset, length, comment);
+}
