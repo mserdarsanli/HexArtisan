@@ -34,6 +34,7 @@ using namespace std;
 using namespace boost;
 
 Hexa::Hexa(const gengetopt_args_info &args)
+  : args(args)
 {
 	if (args.column_count_given)
 	{
@@ -45,7 +46,7 @@ Hexa::Hexa(const gengetopt_args_info &args)
 	}
 }
 
-void Hexa::LoadScriptFile(std::string &file_name)
+void Hexa::LoadScriptFile(const string &file_name)
 {
 	ifstream script(file_name);
 
@@ -255,6 +256,25 @@ void Hexa::ProcessCommand(const string &cmd)
 		else if (variable_name == "byte-padding-right")
 		{
 			GetCurrentEditor()->GetStyleSheet().SetBytePaddingRight(value);
+		}
+		else
+		{
+			SetStatus(StatusType::ERROR, "Unknown variable: " + variable_name);
+		}
+		return;
+	}
+
+	// Matches ":set filetype=elf"
+	regex set_basic_string_regex("set[[:space:]]*(([[:alpha:]]+)(-[[:alpha:]]+)*)[[:space:]]*=[[:space:]]*([[:alpha:]]+)");
+
+	if (regex_match(cmd, matches, set_basic_string_regex))
+	{
+		string variable_name = matches[1].str();
+		string value = matches[4].str();
+
+		if (variable_name == "filetype")
+		{
+			LoadScriptFile(string(args.runtime_dir_arg) + "/marks/" + value + ".hexa");
 		}
 		else
 		{

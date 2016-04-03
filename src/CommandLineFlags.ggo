@@ -4,4 +4,6 @@ purpose "HexArtisan hex editor
 
 By Mustafa Serdar Sanli <mserdarsanli@gmail.com>"
 
+option "runtime_dir" - "Where runtime files are located" string optional default="/usr/share/hexa/hexa-1.0.0"
+
 option "column_count" - "Columns to display" int optional default="20"
