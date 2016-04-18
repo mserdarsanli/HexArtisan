@@ -94,6 +94,12 @@ void Hexa::AddNewTab(const string &file_name)
 
 void Hexa::InputKey(Key k)
 {
+	if (input_key_handler)
+	{
+		(this->*input_key_handler)(command_key, k);
+		return;
+	}
+
 	if (entering_command)
 	{
 		if (k == Key::ENTER)
@@ -201,12 +207,44 @@ void Hexa::InputKey(Key k)
 		case Key::CTRL_D:
 			GetCurrentEditor()->ScrollDownHalfPage();
 			break;
+		case Key::LOWERCASE_G:
+			command_key = k;
+			input_key_handler = &Hexa::InputKeyGoto;
+			break;
 		case Key::UPPERCASE_G:
 			GetCurrentEditor()->JumpToFileEnd();
 			break;
 		default:
 			;
 	}
+}
+
+void Hexa::InputKeyGoto(Key cmdKey, Key k)
+{
+	switch (k)
+	{
+		case Key::LOWERCASE_G:
+			GetCurrentEditor()->JumpToFileStart();
+			input_key_handler = nullptr;
+			return;
+		case Key::LOWERCASE_T:
+			++current_tab;
+			if (current_tab >= (int)tabs.size())
+				current_tab = 0;
+			input_key_handler = nullptr;
+			return;
+		case Key::UPPERCASE_T:
+			--current_tab;
+			if (current_tab < 0)
+				current_tab = tabs.size() - 1;
+			input_key_handler = nullptr;
+			return;
+		default:
+			break;
+	}
+
+	// Unknown cmd
+	input_key_handler = nullptr;
 }
 
 void Hexa::SetStatus(StatusType status_type, const string &status_text)

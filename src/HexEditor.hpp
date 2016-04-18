@@ -116,6 +116,11 @@ public:
 		cursor_pos = data->size() - 1;
 	}
 
+	void JumpToFileStart()
+	{
+		cursor_pos = 0;
+	}
+
 private:
 	// When cursor is near end of the visible region, update rows shown if needed.
 	// Should ideally be called after cursor movements, but since HexEditor does not
