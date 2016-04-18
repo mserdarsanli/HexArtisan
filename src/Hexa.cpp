@@ -227,6 +227,18 @@ void Hexa::InputKeyGoto(Key cmdKey, Key k)
 			GetCurrentEditor()->JumpToFileStart();
 			input_key_handler = nullptr;
 			return;
+		case Key::LOWERCASE_T:
+			++current_tab;
+			if (current_tab >= (int)tabs.size())
+				current_tab = 0;
+			input_key_handler = nullptr;
+			return;
+		case Key::UPPERCASE_T:
+			--current_tab;
+			if (current_tab < 0)
+				current_tab = tabs.size() - 1;
+			input_key_handler = nullptr;
+			return;
 		default:
 			break;
 	}
