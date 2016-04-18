@@ -47,7 +47,10 @@ public:
 	{
 		return quit_requested;
 	}
+
+	// Key handlers, for commands requiring multiple key presses, like `gg`
 	void InputKey(Key k);
+	void InputKeyGoto(Key cmdKey, Key k);
 
 	enum class EditorMode
 	{
@@ -119,4 +122,7 @@ private:
 	int last_screen_width = -1;
 
 	const gengetopt_args_info &args;
+
+	void (Hexa::*input_key_handler)(Key cmdKey, Key k) = nullptr;
+	Key command_key = Key::UNKNOWN;
 };
