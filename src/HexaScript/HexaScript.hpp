@@ -116,8 +116,49 @@ public:
 		fn->second.stringified_function(args);
 	}
 
-	// To be implemented
-	void ExecLine(const std::string &line);
+	void ExecLine(const std::string &line)
+	{
+		std::string fn_name;
+		std::vector<std::string> args;
+
+		std::string::const_iterator it = line.begin();
+
+		// Temporary shitty parser with no error checks etc.
+		// TODO FIXME replace this with boost regex (with BOOST_REGEX_MATCH_EXTRA)
+		// to capture repeating groups.
+		while (*it == ' ')
+		{
+			++it;
+		}
+		while (isalnum(*it))
+		{
+			fn_name.push_back(*it);
+			++it;
+		}
+		while (*it)
+		{
+			while (*it == ' ')
+			{
+				++it;
+			}
+			std::string arg;
+			while (isalnum(*it))
+			{
+				arg.push_back(*it);
+				++it;
+			}
+			if (arg.size() > 0)
+			{
+				args.push_back(arg);
+			}
+			else
+			{
+				break;
+			}
+		}
+
+		CallFunction(fn_name, args);
+	}
 
 private:
 

@@ -52,13 +52,17 @@ int main()
 	hs.RegisterFunction<int, int>("multiply", &multiply);
 	hs.RegisterFunction<int>("factorial", &factorial);
 
-	EXPECT(last_multiplication == -1);
+	last_multiplication = -1;
 	hs.CallFunction("multiply", {"4", "7"});
 	EXPECT(last_multiplication == 28);
 
-	EXPECT(last_factorial == -1);
+	last_factorial = -1;
 	hs.CallFunction("factorial", {"5"});
 	EXPECT(last_factorial == 120);
+
+	last_multiplication = -1;
+	hs.ExecLine("multiply 3 99");
+	EXPECT(last_multiplication == 297);
 
 	return 0;
 }
