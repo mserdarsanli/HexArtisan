@@ -46,8 +46,9 @@ hexa: $(SRCS) $(HDRS)
 	g++ -Wall -std=c++1y $(SRCS) -licuuc -lboost_regex -o hexa
 
 tesths: src/HexaScript/HexaScriptTest.cpp \
-        src/HexaScript/HexaScript.hpp
-	g++ -Wall -std=c++1y src/HexaScript/HexaScriptTest.cpp -o tesths
+        src/HexaScript/HexaScript.hpp \
+        src/HexaScript/HexaScript.cpp
+	g++ -Wall -std=c++1y src/HexaScript/HexaScript.cpp src/HexaScript/HexaScriptTest.cpp -o tesths
 
 .PHONY: test
 test: tesths

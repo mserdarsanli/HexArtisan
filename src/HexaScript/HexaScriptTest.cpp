@@ -26,6 +26,16 @@ using namespace std;
             << " at line " << __LINE__ \
             << " expr (" << #a << ")" << std::endl; }
 
+#define PASS(a) {\
+  std::cerr << "\033[32m[PASS]\033[0m" \
+            << " at line " << __LINE__ \
+            << " for test (" << #a << ")" << std::endl; }
+
+#define FAIL(a) {\
+  std::cerr << "\033[31m[FAIL]\033[0m" \
+            << " at line " << __LINE__ \
+            << " for test (" << #a << ")" << std::endl; }
+
 // Since return values are not supported, global values are used here to
 // see if the functions are working as expected.
 int last_factorial = -1;
@@ -45,12 +55,22 @@ void multiply(int a, int b)
 	last_multiplication = a * b;
 }
 
+void noop_0()
+{
+}
+
+void noop_3(string a, string b, string c)
+{
+}
+
 int main()
 {
 	HexaScript hs;
 
 	hs.RegisterFunction<int, int>("multiply", &multiply);
 	hs.RegisterFunction<int>("factorial", &factorial);
+	hs.RegisterFunction("noop_0", &noop_0);
+	hs.RegisterFunction<string, string, string>("noop_3", &noop_3);
 
 	last_multiplication = -1;
 	hs.CallFunction("multiply", {"4", "7"});
@@ -63,6 +83,49 @@ int main()
 	last_multiplication = -1;
 	hs.ExecLine("multiply 3 99");
 	EXPECT(last_multiplication == 297);
+
+	try
+	{
+		hs.ExecLine("    \t\t  ");
+		PASS("Empty line test");
+	}
+	catch (HexaScript::Error &e)
+	{
+		FAIL("Empty line test");
+	}
+
+	try
+	{
+		hs.ExecLine("  _");
+		FAIL("Invalid name test");
+	}
+	catch (HexaScript::Error &e)
+	{
+		cerr << e.ErrorInfo() << endl;
+		PASS("Invalid name test");
+	}
+
+	try
+	{
+		hs.ExecLine(" noop_0 ");
+		PASS("fn call no args");
+	}
+	catch (HexaScript::Error &e)
+	{
+		cerr << e.ErrorInfo() << endl;
+		FAIL("fn call no args");
+	}
+
+	try
+	{
+		hs.ExecLine(" noop_3 arg=1 ar_g2 arg-3 ");
+		PASS("fn call with args");
+	}
+	catch (HexaScript::Error &e)
+	{
+		cerr << e.ErrorInfo() << endl;
+		FAIL("fn call with args");
+	}
 
 	return 0;
 }

@@ -62,7 +62,10 @@ public:
 	struct Error
 	{
 	public:
-		const std::string& ErrorInfo() const;
+		const std::string& ErrorInfo() const
+		{
+			return error_info;
+		}
 	private:
 		Error() = default;
 		Error(Error &ot) = default;
@@ -77,6 +80,17 @@ public:
 
 
 	// TODO merge RegisterFunction functions into one variadic function if possible?
+
+	void RegisterFunction(const std::string &fn_name, std::function<void(void)> fn)
+	{
+		FunctionDef f;
+		f.num_args = 0;
+		f.stringified_function = [fn](const std::vector<std::string> &args)
+		{
+			return fn();
+		};
+		functions[fn_name] = f;
+	}
 
 	template <typename Arg1>
 	void RegisterFunction(const std::string &fn_name, std::function<void(Arg1)> fn)
@@ -103,6 +117,20 @@ public:
 		functions[fn_name] = f;
 	}
 
+	template <typename Arg1, typename Arg2, typename Arg3>
+	void RegisterFunction(const std::string &fn_name, std::function<void(Arg1, Arg2, Arg3)> fn)
+	{
+		FunctionDef f;
+		f.num_args = 3;
+		f.stringified_function = [fn](const std::vector<std::string> &args)
+		{
+			return fn(::_hexascript_helper::from_string_trait<Arg1>::fn(args[0]),
+			          ::_hexascript_helper::from_string_trait<Arg2>::fn(args[1]),
+			          ::_hexascript_helper::from_string_trait<Arg3>::fn(args[2]));
+		};
+		functions[fn_name] = f;
+	}
+
 	void CallFunction(const std::string &fn_name, const std::vector<std::string> &args)
 	{
 		std::unordered_map<std::string, FunctionDef>::iterator fn = functions.find(fn_name);
@@ -116,49 +144,7 @@ public:
 		fn->second.stringified_function(args);
 	}
 
-	void ExecLine(const std::string &line)
-	{
-		std::string fn_name;
-		std::vector<std::string> args;
-
-		std::string::const_iterator it = line.begin();
-
-		// Temporary shitty parser with no error checks etc.
-		// TODO FIXME replace this with boost regex (with BOOST_REGEX_MATCH_EXTRA)
-		// to capture repeating groups.
-		while (*it == ' ')
-		{
-			++it;
-		}
-		while (isalnum(*it))
-		{
-			fn_name.push_back(*it);
-			++it;
-		}
-		while (*it)
-		{
-			while (*it == ' ')
-			{
-				++it;
-			}
-			std::string arg;
-			while (isalnum(*it))
-			{
-				arg.push_back(*it);
-				++it;
-			}
-			if (arg.size() > 0)
-			{
-				args.push_back(arg);
-			}
-			else
-			{
-				break;
-			}
-		}
-
-		CallFunction(fn_name, args);
-	}
+	void ExecLine(const std::string &line);
 
 private:
 
