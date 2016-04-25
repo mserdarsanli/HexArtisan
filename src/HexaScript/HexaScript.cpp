@@ -45,8 +45,45 @@ static string::const_iterator ExtractName(string::const_iterator it, std::string
 
 static string::const_iterator ExtractQuotedString(string::const_iterator it, std::string &arg)
 {
-	// TODO implement
-	return it;
+	if (*it != '"')
+		throw it;
+	++it;
+
+	while (*it)
+	{
+		// End of string
+		if (*it == '"')
+		{
+			++it;
+			return it;
+		}
+
+		if (*it == '\\')
+		{
+			++it;
+
+			// Not accepting all escapes here, should we?
+			switch (*it)
+			{
+				case '\\':
+					arg.push_back('\\');
+					++it;
+					break;
+				case '"':
+					arg.push_back('"');
+					++it;
+					break;
+				default:
+					// Unknown escape
+					throw it;
+			}
+		}
+
+		arg.push_back(*(it++));
+	}
+
+	// String is not terminated until the end, so it should not be accepted.
+	throw it;
 }
 
 static string::const_iterator ExtractUnquotedString(string::const_iterator it, std::string &arg)

@@ -63,6 +63,12 @@ void noop_3(string a, string b, string c)
 {
 }
 
+string last_arg;
+void arg_copy(string s)
+{
+	last_arg = s;
+}
+
 int main()
 {
 	HexaScript hs;
@@ -71,6 +77,7 @@ int main()
 	hs.RegisterFunction<int>("factorial", &factorial);
 	hs.RegisterFunction("noop_0", &noop_0);
 	hs.RegisterFunction<string, string, string>("noop_3", &noop_3);
+	hs.RegisterFunction<string>("arg_copy", &arg_copy);
 
 	last_multiplication = -1;
 	hs.CallFunction("multiply", {"4", "7"});
@@ -126,6 +133,40 @@ int main()
 		cerr << e.ErrorInfo() << endl;
 		FAIL("fn call with args");
 	}
+
+	try
+	{
+		hs.ExecLine(" noop_3 \"ewqewqeqw");
+		FAIL("non terminating string");
+	}
+	catch (HexaScript::Error &e)
+	{
+		cerr << e.ErrorInfo() << endl;
+		PASS("non terminating string");
+	}
+
+	try
+	{
+		hs.ExecLine(" noop_3 \"ewqe\\qwqeqw\" ");
+		FAIL("unknown escape");
+	}
+	catch (HexaScript::Error &e)
+	{
+		cerr << e.ErrorInfo() << endl;
+		PASS("unknown escape");
+	}
+
+	// Test unquoted arg
+	hs.ExecLine("arg_copy wqewqewq");
+	EXPECT(last_arg == "wqewqewq");
+
+	// Test quoted arg
+	hs.ExecLine("arg_copy \"wqewqewq\"");
+	EXPECT(last_arg == "wqewqewq");
+
+	// Test arg with escapes
+	hs.ExecLine("arg_copy \"wqe\\\"wqe\\\\wq\"");
+	EXPECT(last_arg == "wqe\"wqe\\wq");
 
 	return 0;
 }
