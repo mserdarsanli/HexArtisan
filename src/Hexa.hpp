@@ -33,6 +33,8 @@
 #include "StyleSheet.hpp"
 #include "TermInput.hpp"
 
+#include "HexaScript/HexaScript.hpp"
+
 class Hexa
 {
 public:
@@ -86,6 +88,12 @@ private:
 
 	// Loads file and executes commands from it
 	void LoadScriptFile(const std::string &file_name);
+
+private:
+	// Functions registered to `HexaScript` engine
+	// They are prefixed with `sc_` for no reason.
+	void sc_SwitchToTab(int tab_no);
+
 private:
 	// TODO make FileBuffer class.
 	std::map< std::string, std::vector<uint8_t> > file_contents;
@@ -98,6 +106,8 @@ private:
 	std::vector< TabInfo > tabs;
 
 private:
+	HexaScript script_engine;
+
 	// Style sheet to copy when new editors are added.
 	StyleSheet base_style_sheet;
 

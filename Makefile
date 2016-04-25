@@ -19,10 +19,12 @@ SRCS = src/ScreenBufferRenderer.cpp \
        src/TerminalHexEditor.cpp \
        src/HexEditor.cpp \
        src/Hexa.cpp \
+       src/HexaScriptFunctions.cpp \
        src/Painter.cpp \
        src/StyleSheet.cpp \
        src/Unicode.cpp \
-       src/CommandLineFlags.cpp
+       src/CommandLineFlags.cpp \
+       src/HexaScript/HexaScript.cpp
 
 HDRS = src/HexEditor.hpp \
        src/Hexa.hpp \
@@ -40,7 +42,8 @@ HDRS = src/HexEditor.hpp \
        src/Terminal.hpp \
        src/TermInput.hpp \
        src/TermColor.hpp \
-       src/CommandLineFlags.hpp
+       src/CommandLineFlags.hpp \
+       src/HexaScript/HexaScript.hpp
 
 hexa: $(SRCS) $(HDRS)
 	g++ -Wall -std=c++1y $(SRCS) -licuuc -lboost_regex -o hexa
