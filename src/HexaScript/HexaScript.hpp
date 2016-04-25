@@ -74,7 +74,7 @@ public:
 		friend class HexaScript;
 	};
 
-	HexaScript() = default;
+	HexaScript();
 	HexaScript(const HexaScript &ot) = delete;
 	HexaScript& operator=(const HexaScript &ot) = delete;
 
@@ -144,9 +144,21 @@ public:
 		fn->second.stringified_function(args);
 	}
 
+	template <typename T>
+	void RegisterVariable(const std::string &var_name, T *var)
+	{
+		VariableDef v;
+		v.setter_function = [var](std::string s)
+		{
+			*var = ::_hexascript_helper::from_string_trait<T>::fn(s);
+		};
+		variables[var_name] = v;
+	}
+
 	void ExecLine(const std::string &line);
 
 private:
+	void Set(std::string expr);
 
 	struct FunctionDef
 	{
@@ -154,5 +166,11 @@ private:
 		std::function<void(std::vector<std::string>)> stringified_function;
 	};
 
+	struct VariableDef
+	{
+		std::function<void(std::string s)> setter_function;
+	};
+
 	std::unordered_map<std::string, FunctionDef> functions;
+	std::unordered_map<std::string, VariableDef> variables;
 };

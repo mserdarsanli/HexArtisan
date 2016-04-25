@@ -168,5 +168,45 @@ int main()
 	hs.ExecLine("arg_copy \"wqe\\\"wqe\\\\wq\"");
 	EXPECT(last_arg == "wqe\"wqe\\wq");
 
+	// Register some variables
+	bool var_bool = false;
+	hs.RegisterVariable<bool>("var_bool", &var_bool);
+
+	int var_int = -1;
+	hs.RegisterVariable<int>("var_int", &var_int);
+
+	string var_string;
+	hs.RegisterVariable<string>("var_string", &var_string);
+
+	// Set the variables them
+	hs.ExecLine("set var_bool=true");
+	EXPECT(var_bool == true);
+	hs.ExecLine("set var_bool=\"false\"");
+	EXPECT(var_bool == false);
+
+	hs.ExecLine("set var_int=100");
+	EXPECT(var_int == 100);
+	hs.ExecLine("set var_int=\"-11111\"");
+	EXPECT(var_int == -11111);
+
+	hs.ExecLine("set var_string=hello");
+	EXPECT(var_string == "hello");
+	hs.ExecLine("set var_string=\"hehe\\\"weeqw\\\\weqewq\"");
+	EXPECT(var_string == "hehe\"weeqw\\weqewq");
+
+	// Try setting unknown variable
+	try
+	{
+		hs.ExecLine("set weqweqweq=123");
+		FAIL("unknown variable");
+	}
+	catch (HexaScript::Error &e)
+	{
+		cerr << e.ErrorInfo() << endl;
+		PASS("unknown variable");
+	}
+
+	// TODO test value cast errors
+
 	return 0;
 }

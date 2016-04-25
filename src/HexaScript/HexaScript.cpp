@@ -96,7 +96,8 @@ static string::const_iterator ExtractUnquotedString(string::const_iterator it, s
 	}
 	arg.push_back(*(it++));
 
-	while (isalnum(*it) || *it == '_' || *it == '-' || *it == '=')
+	// TODO, should anything be accepted here?
+	while (isalnum(*it) || *it == '_' || *it == '-' || *it == '=' || *it == '"' || *it == '\\')
 		arg.push_back(*(it++));
 
 	return it;
@@ -110,6 +111,49 @@ static string::const_iterator ExtractArg(string::const_iterator it, std::string 
 		return ExtractQuotedString(it, arg);
 	else
 		return ExtractUnquotedString(it, arg);
+}
+
+// Registers the global `set` function, which handles
+// commands for settings variables.
+HexaScript::HexaScript()
+{
+	RegisterFunction<string>("set", [this](string s) { this->Set(s); });
+}
+
+// Handles expressions like `a=3` and sets the variables registered.
+void HexaScript::Set(string expr)
+try
+{
+	string var_name;
+	string value;
+
+	string::const_iterator it = expr.begin();
+
+	it = ExtractName(it, var_name);
+
+	if (*it != '=')
+		throw it;
+	++it;
+
+	it = ExtractArg(it, value);
+
+	// Set the var
+	std::unordered_map<std::string, VariableDef>::iterator var = variables.find(var_name);
+	if (var == variables.end())
+	{
+		Error e;
+		e.error_info = "No such variable: " + var_name;
+		throw e;
+	}
+	var->second.setter_function(value);
+}
+catch (string::const_iterator it)
+{
+	Error e;
+	e.error_info = "HexaScript Error: Unexpected token\n"
+	               "On expr: " + expr + "\n"
+	               "         " + string(it - expr.begin(), ' ') + "^ here";
+	throw e;
 }
 
 void HexaScript::ExecLine(const string &line)
