@@ -45,6 +45,15 @@ HDRS = src/HexEditor.hpp \
 hexa: $(SRCS) $(HDRS)
 	g++ -Wall -std=c++1y $(SRCS) -licuuc -lboost_regex -o hexa
 
+tesths: src/HexaScript/HexaScriptTest.cpp \
+        src/HexaScript/HexaScript.hpp \
+        src/HexaScript/HexaScript.cpp
+	g++ -Wall -std=c++1y src/HexaScript/HexaScript.cpp src/HexaScript/HexaScriptTest.cpp -o tesths
+
+.PHONY: test
+test: tesths
+	./tesths
+
 src/CommandLineFlags.hpp src/CommandLineFlags.cpp: src/CommandLineFlags.ggo
 	gengetopt --input="src/CommandLineFlags.ggo" --unamed-opts=files \
 	    --c-extension=cpp --header-extension=hpp \

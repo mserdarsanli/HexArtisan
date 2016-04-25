@@ -1,5 +1,6 @@
 # Exclude HexArtisan binary produced by `make`
 hexa
+tesths
 
 # Exclude generated files
 src/CommandLineFlags.cpp
