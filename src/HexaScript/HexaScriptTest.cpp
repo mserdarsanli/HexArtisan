@@ -170,13 +170,13 @@ int main()
 
 	// Register some variables
 	bool var_bool = false;
-	hs.RegisterVariable<bool>("var_bool", &var_bool);
+	hs.RegisterVariable<bool>("var_bool", [&var_bool](bool v) { var_bool = v; });
 
 	int var_int = -1;
-	hs.RegisterVariable<int>("var_int", &var_int);
+	hs.RegisterVariable<int>("var_int", [&var_int](int v) { var_int = v; });
 
 	string var_string;
-	hs.RegisterVariable<string>("var_string", &var_string);
+	hs.RegisterVariable<string>("var_string", [&var_string](string v) { var_string = v; });
 
 	// Set the variables them
 	hs.ExecLine("set var_bool=true");
@@ -193,6 +193,15 @@ int main()
 	EXPECT(var_string == "hello");
 	hs.ExecLine("set var_string=\"hehe\\\"weeqw\\\\weqewq\"");
 	EXPECT(var_string == "hehe\"weeqw\\weqewq");
+
+	// Test variable with dashes in name
+	string var_string_2;
+	hs.RegisterVariable<string>("var-string-2", [&var_string_2](string v) { var_string_2 = v; });
+
+	hs.ExecLine("set var-string-2=hello");
+	EXPECT(var_string_2 == "hello");
+	hs.ExecLine("set var-string-2=\"hehe\\\"weeqw\\\\weqewq\"");
+	EXPECT(var_string_2 == "hehe\"weeqw\\weqewq");
 
 	// Try setting unknown variable
 	try

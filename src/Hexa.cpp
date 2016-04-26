@@ -49,6 +49,21 @@ Hexa::Hexa(const gengetopt_args_info &args)
 	script_engine.RegisterFunction<int>("tab", [this](int t){this->sc_SwitchToTab(t);});
 	script_engine.RegisterFunction("q", [this](){this->sc_Quit();});
 	script_engine.RegisterFunction("quit", [this](){this->sc_Quit();});
+
+	script_engine.RegisterVariable<int>("byte-padding-left", [this](int v)
+	{
+		this->GetCurrentEditor()->GetStyleSheet().SetBytePaddingLeft(v);
+	});
+
+	script_engine.RegisterVariable<int>("byte-padding-right", [this](int v)
+	{
+		this->GetCurrentEditor()->GetStyleSheet().SetBytePaddingRight(v);
+	});
+
+	script_engine.RegisterVariable<string>("filetype", [this](string v)
+	{
+		this->LoadScriptFile(string(this->args.runtime_dir_arg) + "/marks/" + v + ".hexa");
+	});
 }
 
 void Hexa::LoadScriptFile(const string &file_name)
@@ -261,6 +276,9 @@ void Hexa::SetStatus(StatusType status_type, const string &status_text)
 // TODO use regex for most of the commands
 void Hexa::ProcessCommand(const string &cmd)
 {
+	// TODO make RegisterVariable<void> for setting such non variables
+	// like `:set big-endian`, which could accept a setter function without
+	// arguments.
 	if (cmd == "set big-endian")
 	{
 		GetCurrentEditor()->SetViewEndianness(Endianness::BigEndian);
@@ -273,54 +291,11 @@ void Hexa::ProcessCommand(const string &cmd)
 		return;
 	}
 
-	// Matches ":set variable-name=321"
-	regex set_positive_integer_regex("set[[:space:]]*(([[:alpha:]]+)(-[[:alpha:]]+)*)[[:space:]]*=[[:space:]]*([[:digit:]]+)");
-
-	smatch matches;
-	if (regex_match(cmd, matches, set_positive_integer_regex))
-	{
-		string variable_name = matches[1].str();
-		int value = atoi(matches[4].str().c_str());
-		// TODO check value range.
-
-		if (variable_name == "byte-padding-left")
-		{
-			GetCurrentEditor()->GetStyleSheet().SetBytePaddingLeft(value);
-		}
-		else if (variable_name == "byte-padding-right")
-		{
-			GetCurrentEditor()->GetStyleSheet().SetBytePaddingRight(value);
-		}
-		else
-		{
-			SetStatus(StatusType::ERROR, "Unknown variable: " + variable_name);
-		}
-		return;
-	}
-
-	// Matches ":set filetype=elf"
-	regex set_basic_string_regex("set[[:space:]]*(([[:alpha:]]+)(-[[:alpha:]]+)*)[[:space:]]*=[[:space:]]*([[:alpha:]]+)");
-
-	if (regex_match(cmd, matches, set_basic_string_regex))
-	{
-		string variable_name = matches[1].str();
-		string value = matches[4].str();
-
-		if (variable_name == "filetype")
-		{
-			LoadScriptFile(string(args.runtime_dir_arg) + "/marks/" + value + ".hexa");
-		}
-		else
-		{
-			SetStatus(StatusType::ERROR, "Unknown variable: " + variable_name);
-		}
-		return;
-	}
-
 	// Process :mark "sadasdas" // For selection
 	// or :mark 0:4 "Header" // For absolute offset:length
 	regex mark_selection_regex("mark[[:space:]]*\"([^\"]+)\"");
 	regex mark_absolute_range_regex("mark[[:space:]]*(([0-9]+):([0-9]+))[[:space:]]*\"([^\"]+)\"");
+	smatch matches;
 	if (regex_match(cmd, matches, mark_selection_regex))
 	{
 		if (mode != EditorMode::Visual)

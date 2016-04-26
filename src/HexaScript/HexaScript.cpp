@@ -37,7 +37,7 @@ static string::const_iterator ExtractName(string::const_iterator it, std::string
 	}
 	n.push_back(*(it++));
 
-	while (isalnum(*it) || *it == '_')
+	while (isalnum(*it) || *it == '_' || *it == '-')
 		n.push_back(*(it++));
 
 	return it;
