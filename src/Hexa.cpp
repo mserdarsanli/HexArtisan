@@ -271,6 +271,9 @@ void Hexa::SetStatus(StatusType status_type, const string &status_text)
 // TODO use regex for most of the commands
 void Hexa::ProcessCommand(const string &cmd)
 {
+	// TODO make RegisterVariable<void> for setting such non variables
+	// like `:set big-endian`, which could accept a setter function without
+	// arguments.
 	if (cmd == "set big-endian")
 	{
 		GetCurrentEditor()->SetViewEndianness(Endianness::BigEndian);
