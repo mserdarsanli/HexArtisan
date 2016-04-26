@@ -49,6 +49,16 @@ Hexa::Hexa(const gengetopt_args_info &args)
 	script_engine.RegisterFunction<int>("tab", [this](int t){this->sc_SwitchToTab(t);});
 	script_engine.RegisterFunction("q", [this](){this->sc_Quit();});
 	script_engine.RegisterFunction("quit", [this](){this->sc_Quit();});
+
+	script_engine.RegisterVariable<int>("byte-padding-left", [this](int v)
+	{
+		this->GetCurrentEditor()->GetStyleSheet().SetBytePaddingLeft(v);
+	});
+
+	script_engine.RegisterVariable<int>("byte-padding-right", [this](int v)
+	{
+		this->GetCurrentEditor()->GetStyleSheet().SetBytePaddingRight(v);
+	});
 }
 
 void Hexa::LoadScriptFile(const string &file_name)
@@ -273,34 +283,10 @@ void Hexa::ProcessCommand(const string &cmd)
 		return;
 	}
 
-	// Matches ":set variable-name=321"
-	regex set_positive_integer_regex("set[[:space:]]*(([[:alpha:]]+)(-[[:alpha:]]+)*)[[:space:]]*=[[:space:]]*([[:digit:]]+)");
-
-	smatch matches;
-	if (regex_match(cmd, matches, set_positive_integer_regex))
-	{
-		string variable_name = matches[1].str();
-		int value = atoi(matches[4].str().c_str());
-		// TODO check value range.
-
-		if (variable_name == "byte-padding-left")
-		{
-			GetCurrentEditor()->GetStyleSheet().SetBytePaddingLeft(value);
-		}
-		else if (variable_name == "byte-padding-right")
-		{
-			GetCurrentEditor()->GetStyleSheet().SetBytePaddingRight(value);
-		}
-		else
-		{
-			SetStatus(StatusType::ERROR, "Unknown variable: " + variable_name);
-		}
-		return;
-	}
-
 	// Matches ":set filetype=elf"
 	regex set_basic_string_regex("set[[:space:]]*(([[:alpha:]]+)(-[[:alpha:]]+)*)[[:space:]]*=[[:space:]]*([[:alpha:]]+)");
 
+	smatch matches;
 	if (regex_match(cmd, matches, set_basic_string_regex))
 	{
 		string variable_name = matches[1].str();
