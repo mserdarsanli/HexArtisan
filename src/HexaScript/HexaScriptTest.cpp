@@ -194,6 +194,15 @@ int main()
 	hs.ExecLine("set var_string=\"hehe\\\"weeqw\\\\weqewq\"");
 	EXPECT(var_string == "hehe\"weeqw\\weqewq");
 
+	// Test variable with dashes in name
+	string var_string_2;
+	hs.RegisterVariable<string>("var-string-2", [&var_string_2](string v) { var_string_2 = v; });
+
+	hs.ExecLine("set var-string-2=hello");
+	EXPECT(var_string_2 == "hello");
+	hs.ExecLine("set var-string-2=\"hehe\\\"weeqw\\\\weqewq\"");
+	EXPECT(var_string_2 == "hehe\"weeqw\\weqewq");
+
 	// Try setting unknown variable
 	try
 	{
