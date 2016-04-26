@@ -147,12 +147,12 @@ public:
 	}
 
 	template <typename T>
-	void RegisterVariable(const std::string &var_name, T *var)
+	void RegisterVariable(const std::string &var_name, std::function<void(T)> setter_fn)
 	{
 		VariableDef v;
-		v.setter_function = [var](std::string s)
+		v.setter_function = [setter_fn](std::string s)
 		{
-			*var = ::_hexascript_helper::from_string_trait<T>::fn(s);
+			setter_fn(::_hexascript_helper::from_string_trait<T>::fn(s));
 		};
 		variables[var_name] = v;
 	}

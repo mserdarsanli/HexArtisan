@@ -170,13 +170,13 @@ int main()
 
 	// Register some variables
 	bool var_bool = false;
-	hs.RegisterVariable<bool>("var_bool", &var_bool);
+	hs.RegisterVariable<bool>("var_bool", [&var_bool](bool v) { var_bool = v; });
 
 	int var_int = -1;
-	hs.RegisterVariable<int>("var_int", &var_int);
+	hs.RegisterVariable<int>("var_int", [&var_int](int v) { var_int = v; });
 
 	string var_string;
-	hs.RegisterVariable<string>("var_string", &var_string);
+	hs.RegisterVariable<string>("var_string", [&var_string](string v) { var_string = v; });
 
 	// Set the variables them
 	hs.ExecLine("set var_bool=true");
