@@ -29,3 +29,8 @@ void Hexa::sc_SwitchToTab(int tab_no)
 
 	current_tab = tab_no - 1;
 }
+
+void Hexa::sc_Quit()
+{
+	quit_requested = true;
+}

@@ -46,6 +46,8 @@ Hexa::Hexa(const gengetopt_args_info &args)
 	}
 
 	script_engine.RegisterFunction<int>("tab", [this](int t){this->sc_SwitchToTab(t);});
+	script_engine.RegisterFunction("q", [this](){this->sc_Quit();});
+	script_engine.RegisterFunction("quit", [this](){this->sc_Quit();});
 }
 
 void Hexa::LoadScriptFile(const string &file_name)
@@ -258,12 +260,6 @@ void Hexa::SetStatus(StatusType status_type, const string &status_text)
 // TODO use regex for most of the commands
 void Hexa::ProcessCommand(const string &cmd)
 {
-	if (cmd == "quit" || cmd == "q")
-	{
-		quit_requested = true;
-		return;
-	}
-
 	if (cmd == "set big-endian")
 	{
 		GetCurrentEditor()->SetViewEndianness(Endianness::BigEndian);
