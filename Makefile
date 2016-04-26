@@ -19,10 +19,12 @@ SRCS = src/ScreenBufferRenderer.cpp \
        src/TerminalHexEditor.cpp \
        src/HexEditor.cpp \
        src/Hexa.cpp \
+       src/HexaScriptFunctions.cpp \
        src/Painter.cpp \
        src/StyleSheet.cpp \
        src/Unicode.cpp \
-       src/CommandLineFlags.cpp
+       src/CommandLineFlags.cpp \
+       src/HexaScript/HexaScript.cpp
 
 HDRS = src/HexEditor.hpp \
        src/Hexa.hpp \
@@ -40,10 +42,20 @@ HDRS = src/HexEditor.hpp \
        src/Terminal.hpp \
        src/TermInput.hpp \
        src/TermColor.hpp \
-       src/CommandLineFlags.hpp
+       src/CommandLineFlags.hpp \
+       src/HexaScript/HexaScript.hpp
 
 hexa: $(SRCS) $(HDRS)
 	g++ -Wall -std=c++1y $(SRCS) -licuuc -lboost_regex -o hexa
+
+tesths: src/HexaScript/HexaScriptTest.cpp \
+        src/HexaScript/HexaScript.hpp \
+        src/HexaScript/HexaScript.cpp
+	g++ -Wall -std=c++1y src/HexaScript/HexaScript.cpp src/HexaScript/HexaScriptTest.cpp -o tesths
+
+.PHONY: test
+test: tesths
+	./tesths
 
 src/CommandLineFlags.hpp src/CommandLineFlags.cpp: src/CommandLineFlags.ggo
 	gengetopt --input="src/CommandLineFlags.ggo" --unamed-opts=files \

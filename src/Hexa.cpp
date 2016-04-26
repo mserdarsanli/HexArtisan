@@ -44,6 +44,11 @@ Hexa::Hexa(const gengetopt_args_info &args)
 			base_style_sheet.SetMaxEditorCols(args.column_count_arg);
 		}
 	}
+
+	script_engine.RegisterFunction<string>("exec", [this](string f){this->sc_Exec(f);});
+	script_engine.RegisterFunction<int>("tab", [this](int t){this->sc_SwitchToTab(t);});
+	script_engine.RegisterFunction("q", [this](){this->sc_Quit();});
+	script_engine.RegisterFunction("quit", [this](){this->sc_Quit();});
 }
 
 void Hexa::LoadScriptFile(const string &file_name)
@@ -256,15 +261,6 @@ void Hexa::SetStatus(StatusType status_type, const string &status_text)
 // TODO use regex for most of the commands
 void Hexa::ProcessCommand(const string &cmd)
 {
-	if (cmd == "quit" || cmd == "q")
-	{
-		quit_requested = true;
-		return;
-	}
-
-	if (cmd == "")
-		return;
-
 	if (cmd == "set big-endian")
 	{
 		GetCurrentEditor()->SetViewEndianness(Endianness::BigEndian);
@@ -321,16 +317,6 @@ void Hexa::ProcessCommand(const string &cmd)
 		return;
 	}
 
-	if (cmd.size() > 7
-	    && cmd.substr(0, 6) == "exec \""
-	    && cmd[cmd.size() - 1] == '\"')
-	{
-		string file_name = cmd.substr(6);
-		file_name.pop_back();
-		LoadScriptFile(file_name);
-		return;
-	}
-
 	// Process :mark "sadasdas" // For selection
 	// or :mark 0:4 "Header" // For absolute offset:length
 	regex mark_selection_regex("mark[[:space:]]*\"([^\"]+)\"");
@@ -379,32 +365,6 @@ void Hexa::ProcessCommand(const string &cmd)
 		return;
 	}
 
-	// Process :tab 2
-	if (cmd.size() > 4
-	    && cmd.substr(0, 4) == "tab ")
-	{
-		// TODO FIXME this command should only work in normal mode
-
-		string tab_no_str = cmd.substr(4);
-
-		if (strspn(tab_no_str.c_str(), "0123456789") != tab_no_str.size())
-		{
-			SetStatus(StatusType::ERROR, "Unable to parse tab no: " + tab_no_str);
-			return;
-		}
-
-		// TODO use boost::lexical_cast ?
-		int tab_no = atoi(tab_no_str.c_str());
-		if (tab_no > (int)tabs.size() || tab_no < 1)
-		{
-			SetStatus(StatusType::ERROR, "No such tab: " + tab_no_str);
-			return;
-		}
-
-		current_tab = tab_no - 1;
-		return;
-	}
-
 	// Check if string is numeric, :123 should move cursor to 123rd byte.
 	if (strspn(cmd.c_str(), "0123456789") == cmd.size())
 	{
@@ -429,13 +389,15 @@ void Hexa::ProcessCommand(const string &cmd)
 		return;
 	}
 
-	if (cmd == "")
+	try
 	{
-		return;
+		script_engine.ExecLine(cmd);
 	}
-
-	// No command found.
-	SetStatus(StatusType::ERROR, "Not a command: " + cmd);
+	catch (HexaScript::Error &e)
+	{
+		// TODO provide exception info here
+		SetStatus(StatusType::ERROR, "Error executing command: " + cmd);
+	}
 }
 
 HexEditor* Hexa::GetCurrentEditor()
