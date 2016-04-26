@@ -14,3 +14,16 @@ See [Features](Features.md) for more.
 ## Building
 
 Requires a C++14 compiler.
+
+To build and install:
+
+```
+make
+sudo make install
+```
+
+To run tests
+
+```
+make test
+```
