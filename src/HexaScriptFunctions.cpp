@@ -34,3 +34,8 @@ void Hexa::sc_Quit()
 {
 	quit_requested = true;
 }
+
+void Hexa::sc_Exec(string file_name)
+{
+	LoadScriptFile(file_name);
+}

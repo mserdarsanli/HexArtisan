@@ -45,6 +45,7 @@ Hexa::Hexa(const gengetopt_args_info &args)
 		}
 	}
 
+	script_engine.RegisterFunction<string>("exec", [this](string f){this->sc_Exec(f);});
 	script_engine.RegisterFunction<int>("tab", [this](int t){this->sc_SwitchToTab(t);});
 	script_engine.RegisterFunction("q", [this](){this->sc_Quit();});
 	script_engine.RegisterFunction("quit", [this](){this->sc_Quit();});
@@ -313,16 +314,6 @@ void Hexa::ProcessCommand(const string &cmd)
 		{
 			SetStatus(StatusType::ERROR, "Unknown variable: " + variable_name);
 		}
-		return;
-	}
-
-	if (cmd.size() > 7
-	    && cmd.substr(0, 6) == "exec \""
-	    && cmd[cmd.size() - 1] == '\"')
-	{
-		string file_name = cmd.substr(6);
-		file_name.pop_back();
-		LoadScriptFile(file_name);
 		return;
 	}
 
