@@ -93,6 +93,8 @@ private:
 	// Functions registered to `HexaScript` engine
 	// They are prefixed with `sc_` for no reason.
 	void sc_Exec(string file_name);
+	void sc_MarkAbsoluteRange(string range, string comment);
+	void sc_MarkSelection(string comment);
 	void sc_SwitchToTab(int tab_no);
 	void sc_Quit();
 

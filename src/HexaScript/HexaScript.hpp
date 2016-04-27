@@ -91,7 +91,7 @@ public:
 		{
 			return fn();
 		};
-		functions[fn_name] = f;
+		functions[fn_name + "$" + std::to_string(f.num_args)] = f;
 	}
 
 	template <typename Arg1>
@@ -103,7 +103,7 @@ public:
 		{
 			return fn(::_hexascript_helper::from_string_trait<Arg1>::fn(args[0]));
 		};
-		functions[fn_name] = f;
+		functions[fn_name + "$" + std::to_string(f.num_args)] = f;
 	}
 
 	template <typename Arg1, typename Arg2>
@@ -116,7 +116,7 @@ public:
 			return fn(::_hexascript_helper::from_string_trait<Arg1>::fn(args[0]),
 			          ::_hexascript_helper::from_string_trait<Arg2>::fn(args[1]));
 		};
-		functions[fn_name] = f;
+		functions[fn_name + "$" + std::to_string(f.num_args)] = f;
 	}
 
 	template <typename Arg1, typename Arg2, typename Arg3>
@@ -130,12 +130,13 @@ public:
 			          ::_hexascript_helper::from_string_trait<Arg2>::fn(args[1]),
 			          ::_hexascript_helper::from_string_trait<Arg3>::fn(args[2]));
 		};
-		functions[fn_name] = f;
+		functions[fn_name + "$" + std::to_string(f.num_args)] = f;
 	}
 
 	void CallFunction(const std::string &fn_name, const std::vector<std::string> &args)
 	{
-		std::unordered_map<std::string, FunctionDef>::iterator fn = functions.find(fn_name);
+		std::unordered_map<std::string, FunctionDef>::iterator fn;
+		fn  = functions.find(fn_name + "$" + std::to_string(args.size()));
 		if (fn == functions.end())
 		{
 			Error e;

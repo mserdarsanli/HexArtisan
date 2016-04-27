@@ -39,3 +39,47 @@ void Hexa::sc_Exec(string file_name)
 {
 	LoadScriptFile(file_name);
 }
+
+void Hexa::sc_MarkAbsoluteRange(string range, string comment)
+{
+	int offset, length;
+	try
+	{
+		size_t sep = range.find(':');
+		if (sep == string::npos)
+		{
+			throw invalid_argument("Invalid range");
+		}
+		offset = stoi(range.substr(0, sep));
+		length = stoi(range.substr(sep + 1));
+
+		if (offset < 0 || length <= 0)
+		{
+			throw invalid_argument("Invalid range");
+		}
+	}
+	catch (std::exception &e)
+	{
+		SetStatus(StatusType::ERROR, e.what());
+		return;
+	}
+
+	GetCurrentEditor()->MarkRange(offset, length, comment);
+
+	SetStatus(StatusType::NORMAL,
+	    "Marked, total marks = " + to_string(GetCurrentEditor()->marks.size()));
+}
+
+void Hexa::sc_MarkSelection(string comment)
+{
+	if (mode != EditorMode::Visual)
+	{
+		SetStatus(StatusType::ERROR, "Not in visual mode");
+		return;
+	}
+
+	GetCurrentEditor()->MarkSelection(comment);
+
+	SetStatus(StatusType::NORMAL,
+	    "Marked, total marks = " + to_string(GetCurrentEditor()->marks.size()));
+}

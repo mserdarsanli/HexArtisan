@@ -22,8 +22,6 @@
 #include <string>
 #include <utility>
 
-#include <boost/regex.hpp>
-
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <fcntl.h>
@@ -47,6 +45,12 @@ Hexa::Hexa(const gengetopt_args_info &args)
 
 	script_engine.RegisterFunction<string>("exec", [this](string f){this->sc_Exec(f);});
 	script_engine.RegisterFunction<int>("tab", [this](int t){this->sc_SwitchToTab(t);});
+
+	// Process :mark "sadasdas" // For selection
+	script_engine.RegisterFunction<string>("mark", [this](string c){this->sc_MarkSelection(c);});
+	// or :mark 0:4 "Header" // For absolute offset:length
+	script_engine.RegisterFunction<string, string>("mark", [this](string r, string c){this->sc_MarkAbsoluteRange(r, c);});
+
 	script_engine.RegisterFunction("q", [this](){this->sc_Quit();});
 	script_engine.RegisterFunction("quit", [this](){this->sc_Quit();});
 
@@ -285,58 +289,8 @@ void Hexa::SetStatus(StatusType status_type, const string &status_text)
 	this->status_text = status_text;
 }
 
-// TODO use regex for most of the commands
 void Hexa::ProcessCommand(const string &cmd)
 {
-	// Process :mark "sadasdas" // For selection
-	// or :mark 0:4 "Header" // For absolute offset:length
-	regex mark_selection_regex("mark[[:space:]]*\"([^\"]+)\"");
-	regex mark_absolute_range_regex("mark[[:space:]]*(([0-9]+):([0-9]+))[[:space:]]*\"([^\"]+)\"");
-	smatch matches;
-	if (regex_match(cmd, matches, mark_selection_regex))
-	{
-		if (mode != EditorMode::Visual)
-		{
-			SetStatus(StatusType::ERROR, "Not in visual mode");
-		}
-		else
-		{
-			string comment = matches[1].str();
-			GetCurrentEditor()->MarkSelection(comment);
-
-			SetStatus(StatusType::NORMAL,
-			    "Marked, total marks = " + to_string(GetCurrentEditor()->marks.size()));
-		}
-		return;
-	}
-	if (regex_match(cmd, matches, mark_absolute_range_regex))
-	{
-		string comment = matches[4].str();
-		int offset, length;
-		try
-		{
-			offset = stoi(matches[2].str());
-			length = stoi(matches[3].str());
-
-			if (offset < 0 || length <= 0)
-			{
-				throw invalid_argument("Invalid range");
-			}
-		}
-		catch (std::exception &e)
-		{
-			SetStatus(StatusType::ERROR, e.what());
-			return;
-		}
-
-		GetCurrentEditor()->MarkRange(offset, length, comment);
-
-		SetStatus(StatusType::NORMAL,
-		    "Marked, total marks = " + to_string(GetCurrentEditor()->marks.size()));
-
-		return;
-	}
-
 	// Check if string is numeric, :123 should move cursor to 123rd byte.
 	if (strspn(cmd.c_str(), "0123456789") == cmd.size())
 	{
