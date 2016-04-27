@@ -22,8 +22,6 @@
 #include <string>
 #include <utility>
 
-#include <boost/regex.hpp>
-
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <fcntl.h>
@@ -291,7 +289,6 @@ void Hexa::SetStatus(StatusType status_type, const string &status_text)
 	this->status_text = status_text;
 }
 
-// TODO use regex for most of the commands
 void Hexa::ProcessCommand(const string &cmd)
 {
 	// Check if string is numeric, :123 should move cursor to 123rd byte.
