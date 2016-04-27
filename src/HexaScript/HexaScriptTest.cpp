@@ -69,6 +69,24 @@ void arg_copy(string s)
 	last_arg = s;
 }
 
+int last_arg_cnt = -1;
+string last_arg_1;
+string last_arg_2;
+
+void fn_overload_1(string arg1)
+{
+	last_arg_cnt = 1;
+	last_arg_1 = arg1;
+	last_arg_2 = "__NONE__";
+}
+
+void fn_overload_2(string arg1, string arg2)
+{
+	last_arg_cnt = 2;
+	last_arg_1 = arg1;
+	last_arg_2 = arg2;
+}
+
 int main()
 {
 	HexaScript hs;
@@ -237,6 +255,16 @@ int main()
 		cerr << e.ErrorInfo() << endl;
 		PASS("unknown option");
 	}
+
+	// Test function overloads (different arg counts)
+	hs.RegisterFunction<string>("overloaded_fn", &fn_overload_1);
+	hs.RegisterFunction<string, string>("overloaded_fn", &fn_overload_2);
+
+	EXPECT(last_arg_cnt == -1);
+	hs.ExecLine("overloaded_fn qwe");
+	EXPECT(last_arg_cnt == 1 && last_arg_1 == "qwe" && last_arg_2 == "__NONE__");
+	hs.ExecLine("overloaded_fn foo bar");
+	EXPECT(last_arg_cnt == 2 && last_arg_1 == "foo" && last_arg_2 == "bar");
 
 	// TODO test value cast errors
 
