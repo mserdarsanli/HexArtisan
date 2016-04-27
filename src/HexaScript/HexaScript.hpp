@@ -157,6 +157,13 @@ public:
 		variables[var_name] = v;
 	}
 
+	void RegisterOption(const std::string &opt_name, std::function<void()> setter_fn)
+	{
+		OptionDef o;
+		o.setter_function = setter_fn;
+		options[opt_name] = o;
+	}
+
 	void ExecLine(const std::string &line);
 
 private:
@@ -173,6 +180,12 @@ private:
 		std::function<void(std::string s)> setter_function;
 	};
 
+	struct OptionDef
+	{
+		std::function<void()> setter_function;
+	};
+
 	std::unordered_map<std::string, FunctionDef> functions;
 	std::unordered_map<std::string, VariableDef> variables;
+	std::unordered_map<std::string, OptionDef> options;
 };

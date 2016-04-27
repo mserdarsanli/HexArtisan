@@ -215,6 +215,29 @@ int main()
 		PASS("unknown variable");
 	}
 
+	// Test options (like variables, but with no value)
+	string endianness = "default";
+	hs.RegisterOption("big-endian", [&endianness]() { endianness = "BE"; });
+	hs.RegisterOption("little-endian", [&endianness]() { endianness = "LE"; });
+
+	EXPECT(endianness == "default");
+	hs.ExecLine("set big-endian");
+	EXPECT(endianness == "BE");
+	hs.ExecLine("set little-endian");
+	EXPECT(endianness == "LE");
+
+	// Try setting unknown option
+	try
+	{
+		hs.ExecLine("set unregistered-option");
+		FAIL("unknown option");
+	}
+	catch (HexaScript::Error &e)
+	{
+		cerr << e.ErrorInfo() << endl;
+		PASS("unknown option");
+	}
+
 	// TODO test value cast errors
 
 	return 0;
