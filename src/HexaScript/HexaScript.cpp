@@ -124,25 +124,36 @@ HexaScript::HexaScript()
 void HexaScript::Set(string expr)
 try
 {
-	string var_name;
+	string name;
 	string value;
 
 	string::const_iterator it = expr.begin();
 
-	it = ExtractName(it, var_name);
+	it = ExtractName(it, name);
 
 	if (*it != '=')
-		throw it;
+	{
+		// Must be an option like `:set big-endian`
+		std::unordered_map<std::string, OptionDef>::iterator opt = options.find(name);
+		if (opt == options.end())
+		{
+			Error e;
+			e.error_info = "No such option: " + name;
+			throw e;
+		}
+		opt->second.setter_function();
+		return;
+	}
 	++it;
 
 	it = ExtractArg(it, value);
 
 	// Set the var
-	std::unordered_map<std::string, VariableDef>::iterator var = variables.find(var_name);
+	std::unordered_map<std::string, VariableDef>::iterator var = variables.find(name);
 	if (var == variables.end())
 	{
 		Error e;
-		e.error_info = "No such variable: " + var_name;
+		e.error_info = "No such variable: " + name;
 		throw e;
 	}
 	var->second.setter_function(value);
