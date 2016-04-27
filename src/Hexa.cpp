@@ -50,6 +50,7 @@ Hexa::Hexa(const gengetopt_args_info &args)
 	script_engine.RegisterFunction("q", [this](){this->sc_Quit();});
 	script_engine.RegisterFunction("quit", [this](){this->sc_Quit();});
 
+
 	script_engine.RegisterVariable<int>("byte-padding-left", [this](int v)
 	{
 		this->GetCurrentEditor()->GetStyleSheet().SetBytePaddingLeft(v);
@@ -63,6 +64,17 @@ Hexa::Hexa(const gengetopt_args_info &args)
 	script_engine.RegisterVariable<string>("filetype", [this](string v)
 	{
 		this->LoadScriptFile(string(this->args.runtime_dir_arg) + "/marks/" + v + ".hexa");
+	});
+
+
+	script_engine.RegisterOption("big-endian", [this]()
+	{
+		GetCurrentEditor()->SetViewEndianness(Endianness::BigEndian);
+	});
+
+	script_engine.RegisterOption("little-endian", [this]()
+	{
+		GetCurrentEditor()->SetViewEndianness(Endianness::LittleEndian);
 	});
 }
 
@@ -276,21 +288,6 @@ void Hexa::SetStatus(StatusType status_type, const string &status_text)
 // TODO use regex for most of the commands
 void Hexa::ProcessCommand(const string &cmd)
 {
-	// TODO make RegisterVariable<void> for setting such non variables
-	// like `:set big-endian`, which could accept a setter function without
-	// arguments.
-	if (cmd == "set big-endian")
-	{
-		GetCurrentEditor()->SetViewEndianness(Endianness::BigEndian);
-		return;
-	}
-
-	if (cmd == "set little-endian")
-	{
-		GetCurrentEditor()->SetViewEndianness(Endianness::LittleEndian);
-		return;
-	}
-
 	// Process :mark "sadasdas" // For selection
 	// or :mark 0:4 "Header" // For absolute offset:length
 	regex mark_selection_regex("mark[[:space:]]*\"([^\"]+)\"");
