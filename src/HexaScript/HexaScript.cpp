@@ -88,8 +88,8 @@ static string::const_iterator ExtractQuotedString(string::const_iterator it, std
 
 static string::const_iterator ExtractUnquotedString(string::const_iterator it, std::string &arg)
 {
-	// Allowed characters are [a-zA-Z0-9_\-=]
-	if (!(isalnum(*it) || *it == '_' || *it == '-' || *it == '='))
+	// Allowed characters are [a-zA-Z0-9_\-=:]
+	if (!(isalnum(*it) || *it == '_' || *it == '-' || *it == '=' || *it == ':'))
 	{
 		// Unexpected token.
 		throw it;
@@ -97,7 +97,7 @@ static string::const_iterator ExtractUnquotedString(string::const_iterator it, s
 	arg.push_back(*(it++));
 
 	// TODO, should anything be accepted here?
-	while (isalnum(*it) || *it == '_' || *it == '-' || *it == '=' || *it == '"' || *it == '\\')
+	while (isalnum(*it) || *it == '_' || *it == '-' || *it == '=' || *it == ':' || *it == '"' || *it == '\\')
 		arg.push_back(*(it++));
 
 	return it;
