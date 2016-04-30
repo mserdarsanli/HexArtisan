@@ -53,6 +53,9 @@ Hexa::Hexa(const gengetopt_args_info &args)
 	script_engine.RegisterFunction("q", [this](){this->sc_Quit();});
 	script_engine.RegisterFunction("quit", [this](){this->sc_Quit();});
 
+	script_engine.RegisterFunction<string, string>("replace",
+	    [this](string t, string v){this->sc_Replace(t,v);});
+
 
 	script_engine.RegisterVariable<int>("byte-padding-left", [this](int v)
 	{

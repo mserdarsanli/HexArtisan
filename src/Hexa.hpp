@@ -95,6 +95,7 @@ private:
 	void sc_Exec(string file_name);
 	void sc_MarkAbsoluteRange(string range, string comment);
 	void sc_MarkSelection(string comment);
+	void sc_Replace(string type, string value);
 	void sc_SwitchToTab(int tab_no);
 	void sc_Quit();
 

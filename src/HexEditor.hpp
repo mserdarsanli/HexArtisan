@@ -74,6 +74,17 @@ public:
 		return std::to_string(num);
 	}
 
+	template <typename ValueType>
+	void ReplaceValueOnCursor(ValueType t)
+	{
+		if (cursor_pos + sizeof(ValueType) > data->size())
+		{
+			throw std::out_of_range("Not enought space");
+		}
+		ValueType bytes = ToEndianness(view_endianness, t);
+		*reinterpret_cast<ValueType*>(&(*data)[cursor_pos]) = bytes;
+	}
+
 	void MoveCursorDown()
 	{
 		if (cursor_pos + editor_column_count < (int)data->size())

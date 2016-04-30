@@ -72,3 +72,53 @@ inline char32_t FromEndianness(Endianness e, char32_t num)
 {
 	return (e == Endianness::BigEndian ? be32toh(num) : le32toh(num));
 }
+
+inline uint8_t ToEndianness(Endianness e, uint8_t num)
+{
+	return num;
+}
+
+inline uint16_t ToEndianness(Endianness e, uint16_t num)
+{
+	return (e == Endianness::BigEndian ? htobe16(num) : htole16(num));
+}
+
+inline uint32_t ToEndianness(Endianness e, uint32_t num)
+{
+	return (e == Endianness::BigEndian ? htobe32(num) : htole32(num));
+}
+
+inline uint64_t ToEndianness(Endianness e, uint64_t num)
+{
+	return (e == Endianness::BigEndian ? htobe64(num) : htole64(num));
+}
+
+inline int8_t ToEndianness(Endianness e, int8_t num)
+{
+	return num;
+}
+
+inline int16_t ToEndianness(Endianness e, int16_t num)
+{
+	return (e == Endianness::BigEndian ? htobe16(num) : htole16(num));
+}
+
+inline int32_t ToEndianness(Endianness e, int32_t num)
+{
+	return (e == Endianness::BigEndian ? htobe32(num) : htole32(num));
+}
+
+inline int64_t ToEndianness(Endianness e, int64_t num)
+{
+	return (e == Endianness::BigEndian ? htobe64(num) : htole64(num));
+}
+
+inline char16_t ToEndianness(Endianness e, char16_t num)
+{
+	return (e == Endianness::BigEndian ? htobe16(num) : htole16(num));
+}
+
+inline char32_t ToEndianness(Endianness e, char32_t num)
+{
+	return (e == Endianness::BigEndian ? htobe32(num) : htole32(num));
+}
