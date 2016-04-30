@@ -29,7 +29,6 @@
 #include "Hexa.hpp"
 
 using namespace std;
-using namespace boost;
 
 Hexa::Hexa(const gengetopt_args_info &args)
   : args(args)

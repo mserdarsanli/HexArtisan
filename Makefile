@@ -46,7 +46,7 @@ HDRS = src/HexEditor.hpp \
        src/HexaScript/HexaScript.hpp
 
 hexa: $(SRCS) $(HDRS)
-	g++ -Wall -std=c++1y $(SRCS) -licuuc -lboost_regex -o hexa
+	g++ -Wall -std=c++1y $(SRCS) -licuuc -o hexa
 
 tesths: src/HexaScript/HexaScriptTest.cpp \
         src/HexaScript/HexaScript.hpp \
