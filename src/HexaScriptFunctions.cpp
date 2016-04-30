@@ -16,6 +16,7 @@
 // along with HexArtisan.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <boost/lexical_cast.hpp>
+#include <boost/numeric/conversion/cast.hpp>
 
 #include "Hexa.hpp"
 
@@ -90,15 +91,16 @@ void Hexa::sc_Replace(string type, string value)
 try
 {
 	using boost::lexical_cast;
+	using boost::numeric_cast;
 
 	if (type == "i8" || type == "int8_t")
 	{
-		GetCurrentEditor()->ReplaceValueOnCursor<int8_t>(lexical_cast<int8_t>(value));
+		GetCurrentEditor()->ReplaceValueOnCursor<int8_t>(numeric_cast<int8_t>(lexical_cast<int>(value)));
 		return;
 	}
 	if (type == "u8" || type == "uint8_t")
 	{
-		GetCurrentEditor()->ReplaceValueOnCursor<uint8_t>(lexical_cast<uint8_t>(value));
+		GetCurrentEditor()->ReplaceValueOnCursor<uint8_t>(numeric_cast<uint8_t>(lexical_cast<int>(value)));
 		return;
 	}
 	if (type == "i16" || type == "int16_t")
