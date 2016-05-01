@@ -28,6 +28,7 @@
 
 #include "CommandLineFlags.hpp"
 
+#include "CommandHistory.hpp"
 #include "HexEditor.hpp"
 #include "Painter.hpp"
 #include "StyleSheet.hpp"
@@ -73,6 +74,11 @@ public:
 		return mode;
 	}
 
+	CommandHistory& GetCommandHistory()
+	{
+		return command_history;
+	}
+
 private:
 	// Stuff to show in status bar when no command is being typed.
 	void SetStatus(StatusType status_type, const string &status_text = "");
@@ -115,6 +121,7 @@ private:
 
 private:
 	HexaScript script_engine;
+	CommandHistory command_history;
 
 	// Style sheet to copy when new editors are added.
 	StyleSheet base_style_sheet;

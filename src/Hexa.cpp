@@ -153,9 +153,19 @@ void Hexa::InputKey(Key k)
 	{
 		if (k == Key::ENTER)
 		{
+			command_history.AddNewCommand(command_buffer);
 			ProcessCommand(command_buffer);
 			entering_command = false;
 			command_buffer.clear();
+		}
+		else if (k == Key::ARROW_UP)
+		{
+			// Only showing the last command for now.
+			// TODO actually implement this.
+			if (command_history.commands.size())
+			{
+				command_buffer = *command_history.commands.rbegin();
+			}
 		}
 		else if (k == Key::ESCAPE)
 		{

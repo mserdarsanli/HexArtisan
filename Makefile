@@ -16,6 +16,7 @@
 # along with HexArtisan.  If not, see <http://www.gnu.org/licenses/>.
 
 SRCS = src/ScreenBufferRenderer.cpp \
+       src/CommandHistory.cpp \
        src/TerminalHexEditor.cpp \
        src/HexEditor.cpp \
        src/Hexa.cpp \
@@ -28,6 +29,7 @@ SRCS = src/ScreenBufferRenderer.cpp \
        src/HexaScript/HexaScript.cpp
 
 HDRS = src/HexEditor.hpp \
+       src/CommandHistory.hpp \
        src/Hexa.hpp \
        src/Endianness.hpp \
        src/Encoding/unicode_iterator.hpp \
