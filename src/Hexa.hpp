@@ -99,6 +99,9 @@ private:
 	void sc_SwitchToTab(int tab_no);
 	void sc_Quit();
 
+	// Functions to use when marking some file types.
+	void MarkFileType_Tar();
+
 private:
 	// TODO make FileBuffer class.
 	std::map< std::string, std::vector<uint8_t> > file_contents;

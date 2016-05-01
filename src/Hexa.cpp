@@ -69,6 +69,17 @@ Hexa::Hexa(const gengetopt_args_info &args)
 
 	script_engine.RegisterVariable<string>("filetype", [this](string v)
 	{
+		// Since the scripting language does not even support
+		// branching and looping, most filetypes can not be marked
+		// with `*.hexa` files. Here some file types are directly
+		// implemented in C++. After having enought of them,
+		// it might be decided how to evolve HexaScript to support
+		// such use cases.
+		if (v == "tar")
+		{
+			this->MarkFileType_Tar();
+			return;
+		}
 		this->LoadScriptFile(string(this->args.runtime_dir_arg) + "/marks/" + v + ".hexa");
 	});
 
