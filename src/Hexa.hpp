@@ -138,6 +138,8 @@ private:
 
 	// Entering a command after clicking ':'
 	bool entering_command = false;
+	// Index of the currently edited command in history.
+	size_t history_index = -1;
 	// Command that is being entered
 	string command_buffer;
 
