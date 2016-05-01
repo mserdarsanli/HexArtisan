@@ -19,6 +19,7 @@ SRCS = src/ScreenBufferRenderer.cpp \
        src/TerminalHexEditor.cpp \
        src/HexEditor.cpp \
        src/Hexa.cpp \
+       src/HexaFileTypes.cpp \
        src/HexaScriptFunctions.cpp \
        src/Painter.cpp \
        src/StyleSheet.cpp \
