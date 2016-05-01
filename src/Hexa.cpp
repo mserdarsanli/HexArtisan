@@ -153,9 +153,29 @@ void Hexa::InputKey(Key k)
 	{
 		if (k == Key::ENTER)
 		{
+			command_history.AddNewCommand(command_buffer);
 			ProcessCommand(command_buffer);
 			entering_command = false;
 			command_buffer.clear();
+		}
+		else if (k == Key::ARROW_UP)
+		{
+			if (history_index > 0)
+			{
+				--history_index;
+				command_buffer = command_history.commands[history_index];
+			}
+		}
+		else if (k == Key::ARROW_DOWN)
+		{
+			if (history_index < command_history.commands.size())
+			{
+				++history_index;
+				if (history_index == command_history.commands.size())
+					command_buffer = "";
+				else
+					command_buffer = command_history.commands[history_index];
+			}
 		}
 		else if (k == Key::ESCAPE)
 		{
@@ -232,6 +252,7 @@ void Hexa::InputKey(Key k)
 		else if (k == Key::COLON)
 		{
 			entering_command = true;
+			history_index = command_history.commands.size();
 			SetStatus(StatusType::NONE);
 		}
 		return;
@@ -242,6 +263,7 @@ void Hexa::InputKey(Key k)
 	{
 		case Key::COLON:
 			entering_command = true;
+			history_index = command_history.commands.size();
 			SetStatus(StatusType::NONE);
 			break;
 		case Key::LOWERCASE_I:

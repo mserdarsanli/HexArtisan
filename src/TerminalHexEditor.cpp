@@ -17,6 +17,7 @@
 
 #include <iomanip>
 #include <cstdint>
+#include <cstdlib>
 #include <cstring>
 #include <fstream>
 #include <iostream>
@@ -70,6 +71,18 @@ int main(int argc, char *argv[])
 	}
 
 	Hexa hexa{args};
+
+	const char *env_home = getenv("HOME");
+	string history_file_name;
+	if (env_home)
+	{
+		const string home_dir = env_home;
+		// TODO make sure ~/.config/hexa dir exists
+		history_file_name = home_dir + "/.config/hexa/history";
+
+		hexa.GetCommandHistory().LoadFromFile(history_file_name);
+	}
+
 	for (int i = 0; i < (int)args.inputs_num; ++i)
 	{
 		hexa.AddNewTab(args.inputs[i]);
@@ -162,6 +175,11 @@ int main(int argc, char *argv[])
 		screen_painter = Painter(&terminal.GetScreenBuffer());
 		hexa.RenderTo(screen_painter);
 		terminal.SwapBuffers();
+	}
+
+	if (history_file_name.size())
+	{
+		hexa.GetCommandHistory().WriteToFile(history_file_name);
 	}
 
 	return 0;
