@@ -282,6 +282,12 @@ void HexEditor::RenderLine(Painter p, int row_first_byte)
 	{
 		int cid = row_first_byte + col;
 
+		bool hl = (hexa->GetEditorMode() == Hexa::EditorMode::Visual
+		  && cid >= min(cursor_pos, selection_start_byte)
+		  && cid <= max(cursor_pos, selection_start_byte));
+
+		p.SetBgColor(hl ? TermColor::Yellow : TermColor::None);
+
 		if (cid >= (int)data->size())
 		{
 			p.SetFgColor(TermColor::Magenta);
@@ -290,9 +296,16 @@ void HexEditor::RenderLine(Painter p, int row_first_byte)
 		}
 		else
 		{
+			if (cursor_pos == cid)
+			{
+				p.SetBgColor(TermColor::Cyan);
+			}
 			char print_char = (isprint((*data)[cid]) ? (*data)[cid] : '.');
 			p.Printf("%c", print_char);
 		}
+
+		p.SetBgColor(TermColor::None);
+		p.SetFgColor(TermColor::None);
 	}
 
 }
